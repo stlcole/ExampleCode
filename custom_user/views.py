@@ -17,13 +17,6 @@ class ParticipantLoginFormView(FormView):
     initial = {}
     success_url = '/'
 
-    def form_valid(self, form):
-        return HttpResponse('Is Valid')
-
-    def form_invalid(self, form):
-        for p in dir(form.errors): print p
-        return self.render_to_response(context=self.get_context_data(form=form))
-
     def get(self, request, *args, **kwargs):
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, self.get_context_data(form=form))
