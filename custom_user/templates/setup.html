@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="" method="post">{% csrf_token %}
+        {% for field in form %}
+            <div class="fieldWrapper">
+                {{ field.label_tag }} {{ field }} {{ field.errors }}
+            </div>
+        {% endfor %}
+        <p><input type="submit" value="Submit"></p>
+    </form>
+    <p>participant/setup.html</p>
+{% endblock %}
