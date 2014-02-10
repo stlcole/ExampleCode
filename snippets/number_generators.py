@@ -9,7 +9,7 @@ from .number_attributes import is_prime
 
 def generator_limiter(generator=None, limit=None, count=None, filter_by=None, last_only=False, as_tuple=0):
     '''
-    generator_limiter(generator, limit, count, last_only, as_tuple)
+    generator_limiter(generator, limit, count, filter_by, last_only, as_tuple)
     will operate the given generator within the conditions established by limit,
     count, last_only, and as_tuple.
 
