@@ -2,28 +2,47 @@ __author__ = 'cole'
 
 from collections import Iterable
 import itertools
+import warnings
 
 from .number_attributes import is_prime
 
 
-def generator_limiter(generator, limit=None, count=None, last_only=False, as_tuple=0):
+def generator_limiter(generator=None, limit=None, count=None, filter_by=None, last_only=False, as_tuple=0):
     '''
-    generator_limiter(generator, limit, last_only=False)
-    takes a generator function and a limit lambda as arguments,
-    and runs the generator function, yielding values, until the limit is hit
+    generator_limiter(generator, limit, count, last_only, as_tuple)
+    will operate the given generator within the conditions established by limit,
+    count, last_only, and as_tuple.
 
-    the argument 'limit' defaults to limit=(lambda x: True)
-    which will run the generator as if its while statement were 'while True'
+        generator: provides a generator function to be subject to the associated
+        limits as detailed by limit, count, last_only and as_tuple. It defaults to
+        itertools.count if no generator is provided.
 
-    'last_only' defaults to False, but if True, generator_limiter()
-    will only return the last value generated before a value fails the limit
+        limit: stops the generator if the next yield value is not less than the limit
 
-    'as_tuple' defaults to 0, but if specified, the generator will yield
-    a tuple of values so long as all values are within 'limit'
+        count: limits the number of yielded results to count
+
+        filter_by: provides a function (usual a lambda) which provide condition testing
+        for each generated result.
+
+        last_only: yields only the last value for a given generator if last_only
+        is set to True. Combine with count for infinite generators.
+
+        as_tuple: yields results as a tuple of value set by as_tuple=x.
     '''
 
-    assert isinstance(generator, Iterable), 'generator_limiter() requires an iterable object'
-    is_within_limit = limit or (lambda x: True)
+    if count:
+        assert isinstance(count, int or float) and count > 0, \
+            'count must be a positive numeric value'
+
+        if isinstance(count, float):
+            warnings.warn('count is a float value and will be truncated to nearest int')
+            count = int(count)
+
+    is_within_limit = limit and (lambda x: x < limit) or (lambda x: True)
+    generator = generator or itertools.count()
+
+    if filter_by:
+        generator = itertools.ifilter(filter_by, generator)
 
     gen_instance = enumerate(generator)
     index, value = gen_instance.next()

@@ -9,50 +9,40 @@ class TestGenerators(unittest.TestCase):
         from snippets import generator_limiter
         from snippets.number_generators import _fibonacci_generator
 
-        gen = itertools.count()
-        gl = generator_limiter(gen, limit=(lambda x: x < 20))
+
+        gen = generator_limiter(filter_by=(lambda x: x & 1))
+        self.assertEqual(gen.next(), 1)
+        self.assertEqual(gen.next(), 3)
+        self.assertEqual(gen.next(), 5)
+
+        gl = generator_limiter(count=20)
         self.assertEqual(list(gl), range(20))
 
-        gen = itertools.count()
-        gl = generator_limiter(gen, limit=(lambda x: x < 20), last_only=True)
+        gl = generator_limiter(count=20, last_only=True)
         self.assertEqual(list(gl), [19])
 
-        gen = itertools.count()
-        gl = generator_limiter(gen, count=13)
-        self.assertEqual(list(gl), range(13))
-
-        gen = itertools.count()
-        gl = generator_limiter(gen, count=15, last_only=True)
-        self.assertEqual(list(gl), [14])
-
-
-        gen = itertools.count()
-        gl = generator_limiter(gen, limit=(lambda x: x < 21), as_tuple=2)
+        gl = generator_limiter(limit=21, as_tuple=2)
         self.assertEqual(
             list(gl),
             [(0, 1), (2, 3), (4, 5), (6, 7), (8, 9), (10, 11), (12, 13), (14, 15), (16, 17), (18, 19)]
         )
 
-        gen = itertools.count()
-        gl = generator_limiter(gen, limit=(lambda x: x < 21), last_only=True, as_tuple=2)
+        gl = generator_limiter(limit=21, last_only=True, as_tuple=2)
         self.assertEqual(list(gl), [(18, 19)])
 
-        gen = itertools.count()
-        gl = generator_limiter(gen, limit=(lambda x: x < 21), count=4, as_tuple=2)
+        gl = generator_limiter(limit=21, count=4, as_tuple=2)
         self.assertEqual(list(gl), [(0, 1), (2, 3), (4, 5), (6, 7)])
 
-        gen = itertools.count()
-        gl = generator_limiter(gen, limit=(lambda x: x < 21), count=4, last_only=True, as_tuple=2)
-        self.assertEqual(list(gl), [(6,7)])
+        gl = generator_limiter(limit=21, count=4, last_only=True, as_tuple=2)
+        self.assertEqual(list(gl), [(6, 7)])
 
         gen = _fibonacci_generator()
-        gl = generator_limiter(gen, limit=(lambda x: x < 100), as_tuple=3)
+        gl = generator_limiter(gen, limit=100, as_tuple=3)
         self.assertEqual(list(gl), [(1, 1, 2), (3, 5, 8), (13, 21, 34)])
 
         gen = _fibonacci_generator()
-        gl = generator_limiter(gen, limit=(lambda x: x < 100), last_only=True, as_tuple=3)
+        gl = generator_limiter(gen, limit=100, last_only=True, as_tuple=3)
         self.assertEqual(list(gl), [(13, 21, 34)])
-
 
     def test_counter(self):
         from snippets import count_generator
@@ -178,14 +168,13 @@ class TestGenerators(unittest.TestCase):
 
         self.assertEqual(list(factors_and_powers), [(2, 3), (3, 4), (5, 7)])
 
-
     def test_private_primes_from_quadratic(self):
         from snippets.number_generators import _primes_from_quadratic
 
         p_list = list(_primes_from_quadratic())
-        print len(set([p for _, p in p_list]))
-        for p in p_list:
-            print(p)
+        # print len(set([p for _, p in p_list]))
+        # for p in p_list:
+        #     print(p)
 
     def test_palindromic_number_generator(self):
         from snippets import palindromic_number_generator
@@ -206,9 +195,6 @@ class TestGenerators(unittest.TestCase):
 
         palindromes = palindromic_number_generator(999, 0)
         self.assertEqual(palindromes.next(), 999999)
-
-        print(palindromes.next())
-        print(palindromes.next())
 
     def test_triplet_generator(self):
         from snippets import bound_triplet_generator
@@ -231,7 +217,6 @@ class TestGenerators(unittest.TestCase):
         collatz_sequence = collatz_generator(13)
 
         self.assertEqual(list(collatz_sequence), [40, 20, 10, 5, 16, 8, 4, 2, 1])
-
 
     def test_muliples_of_n_less_than(self):
         from snippets import multiples_of_n_less_than
