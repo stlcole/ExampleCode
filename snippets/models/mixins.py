@@ -10,9 +10,10 @@ class LambdaMixin(models.Model):
 
     def _attribute_lookup(self, components, lookup_object=None):
         '''
-        _attribute_lookup takes a list of related keywords (i.e. attributes of attributes),
+        _attribute_lookup takes a list of keywords (components),
+        including related keywords (i.e. attributes of attributes),
         and constructs the object which has the final component keyword.
-        e.g. ['profile', 'birthday'] constructs the object self.quarter
+        e.g. ['profile', 'birthday'] constructs the object self.profile
         and then returns the value of self.profile.birthday
 
         recursion is used to handle a component list of length n.
@@ -26,19 +27,19 @@ class LambdaMixin(models.Model):
 
         return lookup_value
 
-    def _input_list(self, input_items):
+    def _input_list(self, variables):
         '''
         returns a list of values for each variable listed in inputs
         '''
 
         input_list = []
-        if isinstance(input_items, list or tuple):
-            for item in input_items:
-                input_components = item.split('.')
+        if isinstance(variables, list or tuple):
+            for v in variables:
+                input_components = v.split('.')
                 input_list.append(self._attribute_lookup(input_components))
 
         else:
-            input_list = [input_items, ]
+            input_list = [variables, ]
 
         return input_list
 
