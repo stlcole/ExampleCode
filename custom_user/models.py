@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.contrib.auth.hashers import check_password, make_password
-from django.contrib.auth.models import AbstractBaseUser, UserManager
+from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from django.template.defaultfilters import slugify
 
 
 class ParticipantManager(UserManager):
@@ -35,7 +35,7 @@ class ParticipantManager(UserManager):
         return user
 
 
-class Participant(AbstractBaseUser):
+class Participant(AbstractBaseUser, PermissionsMixin):
     """
     Custom BaseUser model derived from django.contrib.auth.models.AbstractBaseUser.
     Based on unique email address rather than 'username'.
@@ -43,12 +43,50 @@ class Participant(AbstractBaseUser):
     User profile information contained in the model -- MyUserProfile.
     """
 
-    email = models.EmailField(max_length=254, unique=True, db_index=True)
+    email = models.EmailField(
+        max_length=254,
+        verbose_name='login email address',
+        unique=True, db_index=True
+    )
     email_backup = models.EmailField(max_length=254, null=True, blank=True)
-    # registration_date = models.DateTimeField(auto_now_add=True)
+    registration_date = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
     objects = ParticipantManager()
 
     USERNAME_FIELD = 'email'
+
+    def get_full_name(self):
+        return self.email
+
+    def get_short_name(self):
+        return self.email
+
+    def get_absolute_url(self):
+        return reverse('participant-profile', kwargs={'pk': self.pk})
+
+
+class Profile(models.Model):
+    participant = models.OneToOneField(Participant, editable=False)
+    first_name = models.CharField(
+        max_length=30,
+        verbose_name='common first name',
+    )
+    last_name = models.CharField(max_length=100)
+    birthday = models.DateField()
+    slug = models.SlugField(null=True, blank=True, editable=False)
+
+    def __unicode__(self):
+        return "{} {}".format(self.first_name, self.last_name)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if not self.slug:
+            name = """{} {}""".format(self.first_name, self.last_name)
+            self.slug = slugify(name)
+
+        if not self.formal_name:
+            self.formal_name = "{} {}".format(self.first_name, self.last_name)
+
+        super(Profile, self).save()
