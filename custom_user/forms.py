@@ -1,9 +1,11 @@
+__author__ = 'cole'
+
 from django import forms
 
 from django.contrib.auth import authenticate
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, ReadOnlyPasswordHashField
 
-from .models import Participant
+from .models import Participant, Profile
 
 
 class ParticipantLoginForm(AuthenticationForm):
@@ -16,7 +18,7 @@ class ParticipantLoginForm(AuthenticationForm):
 
     error_messages = {
         'email_unknown': 'The email credential is unknown.',
-        'invalid_pass': 'Invalid password or PIN',
+        'invalid_pass': 'Invalid password',
         'inactive': 'This account is inactive',
     }
 
@@ -103,3 +105,9 @@ class ParticipantCreationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class ProfileChangeForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['first_name', 'last_name', 'birthday']

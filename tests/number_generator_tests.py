@@ -9,7 +9,6 @@ class TestGenerators(unittest.TestCase):
         from snippets import generator_limiter
         from snippets.number_generators import _fibonacci_generator
 
-
         gen = generator_limiter(filter_by=(lambda x: x & 1))
         self.assertEqual(gen.next(), 1)
         self.assertEqual(gen.next(), 3)
@@ -60,6 +59,7 @@ class TestGenerators(unittest.TestCase):
 
     def test_fibonacci_generator(self):
         from snippets import fibonacci_generator
+
         fib_numbers = fibonacci_generator()
 
         self.assertEqual(fib_numbers.next(), 1)
@@ -147,6 +147,7 @@ class TestGenerators(unittest.TestCase):
 
     def test_prime_factor_generator(self):
         from snippets import prime_factor_generator
+
         prime_factors = prime_factor_generator(232792560)
 
         self.assertEqual(prime_factors.next(), 2)
@@ -164,7 +165,7 @@ class TestGenerators(unittest.TestCase):
     def test_prime_factors_and_powers_for_n_generator(self):
         from snippets import prime_factors_and_powers_for_n_generator
 
-        factors_and_powers = prime_factors_and_powers_for_n_generator(2**3 * 3**4 * 5**7)
+        factors_and_powers = prime_factors_and_powers_for_n_generator(2 ** 3 * 3 ** 4 * 5 ** 7)
 
         self.assertEqual(list(factors_and_powers), [(2, 3), (3, 4), (5, 7)])
 
