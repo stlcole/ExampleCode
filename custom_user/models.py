@@ -35,7 +35,7 @@ class ParticipantManager(UserManager):
         return user
 
 
-class Participant(AbstractBaseUser, PermissionsMixin):
+class Participant(AbstractBaseUser):
     """
     Custom BaseUser model derived from django.contrib.auth.models.AbstractBaseUser.
     Based on unique email address rather than 'username'.

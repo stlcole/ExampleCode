@@ -105,8 +105,19 @@ def count_generator(*args):
 
     assert len(args) < 4, 'Uses only start, stop, step values'
 
+    args = list(args)
+    while args and args[-1] is None:
+        args.pop()
+
     if len(args) == 3:
         start, stop, step = args
+        if start is None and stop is None:
+            assert step != 0, "Invalid arguments (None, None, 0)"
+
+            _gen = itertools.count() if abs(step) == 1 \
+                else itertools.ifilter(lambda x: x % abs(step) == 0, itertools.count())
+
+            return step > 0 and _gen or itertools.imap(lambda x: x * -1, _gen)
 
         if stop is not None:
             assert not(start > stop and step > 0), 'cannot use a positive step when counting from high to low'
@@ -128,7 +139,10 @@ def count_generator(*args):
             return itertools.count(start)
 
     start = args and args[0]
-    return start and iter(xrange(start)) or itertools.count()
+    if not start:
+        return itertools.count()
+
+    return iter(xrange(start)) if start > 0 else itertools.imap(lambda x: -x, xrange(abs(start)))
 
 
 def _fibonacci_generator():
