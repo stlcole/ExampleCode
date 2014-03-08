@@ -33,7 +33,7 @@ class LambdaCode(models.Model):
     to be converted into values for input into the lambda function; e. g.
 
             lambda_string = "(lambda x: x * 2)"
-            lambda_variables = "['foo']",
+            lambda_variables = ['foo'],
             getattr(model, 'foo') = 24,
             _inputs = [getattr(model, v) for v in lambda_variables]
             _calculator = eval(lambda_string)
@@ -41,7 +41,7 @@ class LambdaCode(models.Model):
 
     app_model_name is a string in the form "app.model"
 
-    model_get_key_value is a dict for the parameter and value
+    model_get_key_value is a dict for the parameters and values
     used to get a specific model instance. So if
     inst = model.objects.get('id'=1), then
     model_get_key_value = {'id': 1}. All kwargs used by
@@ -117,20 +117,21 @@ class LambdaCode(models.Model):
 
     def variables_list(self, variables=None):
         '''
-        returns a list of values for each variable listed in inputs
+        returns a list of values for each variable listed in variables
         '''
 
         if hasattr(self, '_variables_list'):
             return self._variables_list
 
         variables = variables or self.lambda_variables
+
         variable_list = []
-        if isinstance(variables, list or tuple):
+        if isinstance(variables, list) or isinstance(variables, tuple):
             for v in variables:
                 variable_list.append(self._attribute_lookup(v.split('.')))
 
         else:
-            variable_list = [variables]
+            variable_list = [variables, ]
 
         self._variables_list = variable_list
         return self._variables_list
